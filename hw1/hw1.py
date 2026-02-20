@@ -133,8 +133,12 @@ class NaiveBayes:
           - the vocabulary seen so far (self.vocab)
           - the number of documents seen of each label (self.class_total_doc_counts)
         """
+        self.class_total_doc_counts[label] += 1  # lebel => doc
 
-        pass
+        for i in bow.items():
+            self.vocab.add(i)
+            self.class_word_counts[label][i] += 1
+            self.class_total_word_counts[label] += 1
 
     def tokenize_and_update_model(self, doc, label):
         """
@@ -146,8 +150,8 @@ class NaiveBayes:
 
         Make sure when tokenizing to lower case all of the tokens!
         """
-
-        pass
+        bow = self.tokenize_doc(doc)
+        self.update_model(bow, label)
 
     def top_n(self, label, n):
         """
@@ -155,8 +159,13 @@ class NaiveBayes:
 
         Returns the most frequent n tokens for documents with class 'label'.
         """
+        sorted__list = sorted(
+            self.class_word_counts[label].items(),
+            key=operator.itemgetter(1),
+            reverse=True,
+        )
 
-        pass
+        return sorted__list[:n]
 
     def p_word_given_label(self, word, label):
         """

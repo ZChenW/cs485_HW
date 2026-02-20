@@ -4,8 +4,8 @@
 echo "Question 1.5"
 # TODO: Replace the following line with your code.
 # gerp - E => Extended Regular Expression
-# ^ (From start) | [[:space:]]{10,} (at least 10 spaces) | [A-Z] (Start from Upper case) | [A-Z0-9 .,'-]* (0 or multiplate times) | 
-# ([[:space:]]*\\([^)]*\\))? <=> [[:space:]]* (0 or multiplate times) | \\( => \( => ( | \\) => \) => ) | [^)]* (不是右括号的任意字符)* 
+# ^ (From start) | [[:space:]]{10,} (at least 10 spaces) | [A-Z] (Start from Upper case) | [A-Z0-9 .,'-]* (0 or multiplate times) |
+# ([[:space:]]*\\([^)]*\\))? <=> [[:space:]]* (0 or multiplate times) | \\( => \( => ( | \\) => \) => ) | [^)]* (不是右括号的任意字符)*
 # [[:space:]]*$" The space at the end
 # sed -E => 连续替换
 # s/^ +// => 去掉行首的空格缩进 | s/ (replace) | // (replace item) | ^ + (The start of line and space)
@@ -66,7 +66,8 @@ d {
 	sort |
 	uniq -c |
 	sort -nr |
-	head -20 | python3 -c "import sys; out=[];
+	#head -20 |
+	python3 -c "import sys; out=[];
 for line in sys.stdin:
     c,w=line.split()
     out.append((w, int(c)))
