@@ -136,8 +136,8 @@ class NaiveBayes:
         self.class_total_doc_counts[label] += 1  # lebel => doc
 
         for i in bow.items():
-            self.vocab.add(i)
-            self.class_word_counts[label][i] += 1
+            self.vocab.add(i[0])
+            self.class_word_counts[label][i[0]] += 1
             self.class_total_word_counts[label] += 1
 
     def tokenize_and_update_model(self, doc, label):
@@ -164,7 +164,6 @@ class NaiveBayes:
             key=operator.itemgetter(1),
             reverse=True,
         )
-
         return sorted__list[:n]
 
     def p_word_given_label(self, word, label):
@@ -174,7 +173,10 @@ class NaiveBayes:
         Returns the probability of word given label
         according to this NB model.
         """
-        pass
+
+        return self.class_word_counts[label][word] / sum(
+            self.class_word_counts[label].values()
+        )
 
     def p_word_given_label_and_alpha(self, word, label, alpha):
         """
