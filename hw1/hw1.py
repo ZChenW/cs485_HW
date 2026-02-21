@@ -137,8 +137,8 @@ class NaiveBayes:
 
         for i in bow.items():
             self.vocab.add(i[0])
-            self.class_word_counts[label][i[0]] += 1
-            self.class_total_word_counts[label] += 1
+            self.class_word_counts[label][i[0]] += i[1]
+            self.class_total_word_counts[label] += i[1]
 
     def tokenize_and_update_model(self, doc, label):
         """
@@ -185,7 +185,10 @@ class NaiveBayes:
         Returns the probability of word given label wrt psuedo counts.
         alpha - pseudocount parameter
         """
-        pass
+        a = self.class_total_word_counts[label]
+        return (self.class_word_counts[label][word] + alpha) / (
+            a + alpha * len(self.vocab)
+        )
 
     def log_likelihood(self, bow, label, alpha):
         """
@@ -196,7 +199,12 @@ class NaiveBayes:
         label - either the positive or negative label
         alpha - float; pseudocount parameter
         """
-        pass
+        sum_log = 0
+
+        for x, n in bow.items():
+            p = self.p_word_given_label_and_alpha(x, label, alpha)
+            sum_log += math.log(p) * n
+        return sum_log
 
     def log_prior(self, label):
         """
@@ -204,7 +212,12 @@ class NaiveBayes:
 
         Returns the log prior of a document having the class 'label'.
         """
-        pass
+        total_doc = (
+            self.class_total_doc_counts[POS_LABEL]
+            + self.class_total_doc_counts[NEG_LABEL]
+        )
+
+        return math.log(self.class_total_doc_counts[label] / total_doc)
 
     def unnormalized_log_posterior(self, bow, label, alpha):
         """
@@ -213,7 +226,7 @@ class NaiveBayes:
         Computes the unnormalized log posterior (of doc being of class 'label').
         bow - a bag of words (i.e., a tokenized document)
         """
-        pass
+        return self.log_likelihood(bow, label, alpha) + self.log_prior(label)
 
     def classify(self, bow, alpha):
         """
@@ -224,7 +237,9 @@ class NaiveBayes:
         (depending on which resulted in the higher unnormalized log posterior)
         bow - a bag of words (i.e., a tokenized document)
         """
-        pass
+        pos = self.unnormalized_log_posterior(bow, POS_LABEL, alpha)
+        neg = self.unnormalized_log_posterior(bow, NEG_LABEL, alpha)
+        return POS_LABEL if pos >= neg else NEG_LABEL
 
     def likelihood_ratio(self, word, alpha):
         """
@@ -232,7 +247,10 @@ class NaiveBayes:
 
         Returns the ratio of P(word|pos) to P(word|neg).
         """
-        pass
+
+        return self.p_word_given_label_and_alpha(
+            word, POS_LABEL, alpha
+        ) / self.p_word_given_label_and_alpha(word, NEG_LABEL, alpha)
 
     def evaluate_classifier_accuracy(self, alpha):
         """
